@@ -14,14 +14,18 @@ function SignUpForm() {
 
 	async function handleSubmit(e) {
 		e.preventDefault()
+		try {
+			await fetch('http://localhost:5000/users/', {
+				method: 'POST',
+				credentials:'include',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(user)
+			})
+		} catch (err) {
 
-		await fetch(`http://localhost:5000/users/`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(user)
-		})
+		}
 
 		history.push(`/`)
 	}
