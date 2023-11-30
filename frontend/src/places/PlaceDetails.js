@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router"
 import CommentCard from './CommentCard'
 import NewCommentForm from "./NewCommentForm";
-
+import { CurrentUser } from "../contexts/CurrentUser";
+import { useContext } from "react";
 function PlaceDetails() {
-
+	const { currentUser } = useContext(CurrentUser);
 	const { placeId } = useParams()
-
 	const history = useHistory()
-
 	const [place, setPlace] = useState(null)
 
 	useEffect(() => {
@@ -27,17 +26,33 @@ function PlaceDetails() {
 	function editPlace() {
 		history.push(`/places/${place.placeId}/edit`)
 	}
+	let placeActions = null
+	if (currentUser?.role === 'admin') {
+	placeActions = (
+		<>
+			<a className="btn btn-warning" onClick={editPlace}>
+				Edit
+			</a>
+			<button type="submit" className="btn btn-danger" onClick={deletePlace}>
+				Delete
+			</button>
+		</>
+	)
+	} 
+	
 
 	async function deletePlace() {
 		await fetch(`http://localhost:5000/places/${place.placeId}`, {
-			method: 'DELETE'
+			method: 'DELETE',
+			'Authorization':`Bearer ${localStorage.getItem('token')}`
 		})
 		history.push('/places')
 	}
 
 	async function deleteComment(deletedComment) {
 		await fetch(`http://localhost:5000/places/${place.placeId}/comments/${deletedComment.commentId}`, {
-			method: 'DELETE'
+			method: 'DELETE',
+			'Authorization':`Bearer ${localStorage.getItem('token')}`
 		})
 
 		setPlace({
@@ -46,12 +61,14 @@ function PlaceDetails() {
 				.filter(comment => comment.commentId !== deletedComment.commentId)
 		})
 	}
+	
 
 	async function createComment(commentAttributes) {
 		const response = await fetch(`http://localhost:5000/places/${place.placeId}/comments`, {
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'Authorization':`Bearer ${localStorage.getItem('token')}`
 			},
 			body: JSON.stringify(commentAttributes)
 		})
@@ -128,12 +145,7 @@ function PlaceDetails() {
 						Serving {place.cuisines}.
 					</h4>
 					<br />
-					<a className="btn btn-warning" onClick={editPlace}>
-						Edit
-					</a>{` `}
-					<button type="submit" className="btn btn-danger" onClick={deletePlace}>
-						Delete
-					</button>
+					{placeActions}
 				</div>
 			</div>
 			<hr />
@@ -151,4 +163,4 @@ function PlaceDetails() {
 	)
 }
 
-export default PlaceDetails
+export default PlaceDetails;
