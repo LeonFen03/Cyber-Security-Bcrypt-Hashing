@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useHistory, useParams } from "react-router"
+import { useHistory, useParams } from "react-router";
 
 function SignUpForm() {
 
@@ -12,7 +12,7 @@ function SignUpForm() {
 		password: ''
 	})
 
-	async function handleSubmit(e) {
+	async function handleSubmit(e : { preventDefault: any}) {
 		e.preventDefault()
 
 		await fetch(`${process.env.REACT_APP_SERVER_URL}/users/`, {

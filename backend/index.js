@@ -4,6 +4,10 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const app = express();
 
+// serve static front end in production mode
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, 'client', 'build')));
+}
 
 // Express Settings
 app.use(cors())
